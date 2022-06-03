@@ -3,4 +3,4 @@ project(std_format_join)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(std_format_join main.cpp)
+add_executable(std_format_join main.cpp nofmt/join.h)

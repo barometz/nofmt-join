@@ -36,6 +36,7 @@ without including the above copyright and permission notices.
 #include <string_view>
 #include <vector>
 
+namespace nofmt {
 template <typename It, typename Sentinel, typename Char>
 struct arg_join {
   It begin;
@@ -50,7 +51,7 @@ template <typename It, typename Sentinel, typename Char>
 struct std::formatter<arg_join<It, Sentinel, Char>, Char>
     : std::formatter<typename std::iterator_traits<It>::value_type, Char> {
   template <typename FormatContext>
-  auto format(const arg_join<It, Sentinel, Char>& value, FormatContext& ctx)
+  auto format(const nofmt::arg_join<It, Sentinel, Char>& value, FormatContext& ctx)
       -> decltype(ctx.out()) {
     using base = formatter<typename std::iterator_traits<It>::value_type, Char>;
     auto it = value.begin;
@@ -104,3 +105,4 @@ arg_join<std::ranges::iterator_t<Range>, std::ranges::sentinel_t<Range>, wchar_t
     Range&& range, std::wstring_view sep) {
   return join(std::begin(range), std::end(range), sep);
 }
+}  // namespace nofmt
