@@ -28,19 +28,27 @@ source code, you may redistribute such embedded portions in such object form
 without including the above copyright and permission notices.
 */
 
+#pragma once
+
+#include <format>
+#include <iostream>
+#include <ranges>
+#include <string_view>
+#include <vector>
+
 template <typename It, typename Sentinel, typename Char>
-struct arg_join : detail::view {
+struct arg_join {
   It begin;
   Sentinel end;
-  basic_string_view<Char> sep;
+  std::basic_string_view<Char> sep;
 
-  arg_join(It b, Sentinel e, basic_string_view<Char> s)
+  arg_join(It b, Sentinel e, std::basic_string_view<Char> s)
       : begin(b), end(e), sep(s) {}
 };
 
 template <typename It, typename Sentinel, typename Char>
-struct formatter<arg_join<It, Sentinel, Char>, Char>
-    : formatter<typename std::iterator_traits<It>::value_type, Char> {
+struct std::formatter<arg_join<It, Sentinel, Char>, Char>
+    : std::formatter<typename std::iterator_traits<It>::value_type, Char> {
   template <typename FormatContext>
   auto format(const arg_join<It, Sentinel, Char>& value, FormatContext& ctx)
       -> decltype(ctx.out()) {
@@ -64,12 +72,12 @@ struct formatter<arg_join<It, Sentinel, Char>, Char>
   separated by `sep`.
  */
 template <typename It, typename Sentinel>
-arg_join<It, Sentinel, char> join(It begin, Sentinel end, string_view sep) {
+arg_join<It, Sentinel, char> join(It begin, Sentinel end, std::string_view sep) {
   return {begin, end, sep};
 }
 
 template <typename It, typename Sentinel>
-arg_join<It, Sentinel, wchar_t> join(It begin, Sentinel end, wstring_view sep) {
+arg_join<It, Sentinel, wchar_t> join(It begin, Sentinel end, std::wstring_view sep) {
   return {begin, end, sep};
 }
 
@@ -86,13 +94,13 @@ arg_join<It, Sentinel, wchar_t> join(It begin, Sentinel end, wstring_view sep) {
   \endrst
  */
 template <typename Range>
-arg_join<detail::iterator_t<Range>, detail::sentinel_t<Range>, char> join(
-    Range&& range, string_view sep) {
+arg_join<std::ranges::iterator_t<Range>, std::ranges::sentinel_t<Range>, char> join(
+    Range&& range, std::string_view sep) {
   return join(std::begin(range), std::end(range), sep);
 }
 
 template <typename Range>
-arg_join<detail::iterator_t<Range>, detail::sentinel_t<Range>, wchar_t> join(
-    Range&& range, wstring_view sep) {
+arg_join<std::ranges::iterator_t<Range>, std::ranges::sentinel_t<Range>, wchar_t> join(
+    Range&& range, std::wstring_view sep) {
   return join(std::begin(range), std::end(range), sep);
 }
