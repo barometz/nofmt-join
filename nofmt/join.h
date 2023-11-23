@@ -45,27 +45,6 @@ struct arg_join {
       : begin(b), end(e), sep(s) {}
 };
 
-template <typename It, typename Sentinel, typename Char>
-struct std::formatter<arg_join<It, Sentinel, Char>, Char>
-    : std::formatter<typename std::iterator_traits<It>::value_type, Char> {
-  template <typename FormatContext>
-  auto format(const nofmt::arg_join<It, Sentinel, Char>& value, FormatContext& ctx)
-      -> decltype(ctx.out()) {
-    using base = formatter<typename std::iterator_traits<It>::value_type, Char>;
-    auto it = value.begin;
-    auto out = ctx.out();
-    if (it != value.end) {
-      out = base::format(*it++, ctx);
-      while (it != value.end) {
-        out = std::copy(value.sep.begin(), value.sep.end(), out);
-        ctx.advance_to(out);
-        out = base::format(*it++, ctx);
-      }
-    }
-    return out;
-  }
-};
-
 /**
   Returns an object that formats the iterator range `[begin, end)` with elements
   separated by `sep`.
@@ -104,3 +83,24 @@ arg_join<std::ranges::iterator_t<Range>, std::ranges::sentinel_t<Range>, wchar_t
   return join(std::begin(range), std::end(range), sep);
 }
 }  // namespace nofmt
+
+template <typename It, typename Sentinel, typename Char>
+struct std::formatter<nofmt::arg_join<It, Sentinel, Char>, Char>
+    : std::formatter<typename std::iterator_traits<It>::value_type, Char> {
+  template <typename FormatContext>
+  auto format(nofmt::arg_join<It, Sentinel, Char> value, FormatContext& ctx) const
+      -> decltype(ctx.out()) {
+    using base = formatter<typename std::iterator_traits<It>::value_type, Char>;
+    auto it = value.begin;
+    auto out = ctx.out();
+    if (it != value.end) {
+      out = base::format(*it++, ctx);
+      while (it != value.end) {
+        out = std::copy(value.sep.begin(), value.sep.end(), out);
+        ctx.advance_to(out);
+        out = base::format(*it++, ctx);
+      }
+    }
+    return out;
+  }
+};

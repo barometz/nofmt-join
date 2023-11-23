@@ -14,6 +14,7 @@ THIS SOFTWARE.
 #include "nofmt/join.h"
 
 #include <array>
+#include <cstdint>
 #include <iostream>
 #include <list>
 #include <vector>
